@@ -21,6 +21,7 @@ export default class CodeView {
     this.$editor = context.layoutInfo.editor;
     this.$editable = context.layoutInfo.editable;
     this.$codable = context.layoutInfo.codable;
+    this.$statusbar = context.layoutInfo.statusbar;
     this.options = context.options;
   }
 
@@ -81,6 +82,7 @@ export default class CodeView {
       // CodeMirror hasn't Padding.
       cmEditor.setSize(null, this.$editable.outerHeight());
       this.$codable.data('cmEditor', cmEditor);
+      this.$statusbar.hide();
     } else {
       this.$codable.on('blur', (event) => {
         this.context.triggerEvent('blur.codeview', this.$codable.val(), event);
@@ -97,6 +99,7 @@ export default class CodeView {
       const cmEditor = this.$codable.data('cmEditor');
       this.$codable.val(cmEditor.getValue());
       cmEditor.toTextArea();
+      this.$statusbar.show();
     }
 
     const value = dom.value(this.$codable, this.options.prettifyHtml) || dom.emptyPara;

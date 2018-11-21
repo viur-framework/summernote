@@ -13,6 +13,7 @@
   position: relative;
   clear: both;
   width: 100%;
+  box-sizing: border-box;
 
   /* dropzone */
   @dropzone-color: lightskyblue;
@@ -96,6 +97,7 @@
 ------------------------------------------*/
 .note-editor.note-frame {
   border: 1px solid @border-color;
+  display: inline-grid;
 
   /* codeview mode */
   &.codeview {
@@ -123,6 +125,11 @@
       &[contenteditable="false"] {
         background-color: #e5e5e5;
       }
+
+      ul {margin-left:30px; list-style-type:disc;}
+      ul ul {list-style-type:square;}
+      ol {margin-left:30px; list-style-type:decimal;}
+      ol ol {list-style-type:lower-latin;}
     }
 
     /* codeable */
