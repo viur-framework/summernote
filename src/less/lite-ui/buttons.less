@@ -76,7 +76,7 @@ input[type="button"] {
   }
 }
 
-button.close {
+button.close:not(.icon) {
   padding: 0;
   cursor: pointer;
   background: transparent;
@@ -84,7 +84,7 @@ button.close {
   -webkit-appearance: none;
 }
 
-.close {
+.close:not(.icon)  {
   float: right;
   font-size: 21px;
   line-height: 1;
@@ -92,7 +92,7 @@ button.close {
   opacity: .2;
 }
 
-.close:hover {
+.close:not(.icon):hover {
   -webkit-opacity: 1;
    -khtml-opacity: 1;
      -moz-opacity: 1;
