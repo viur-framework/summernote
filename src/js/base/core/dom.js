@@ -967,7 +967,7 @@ function html($node, isNewlineOnBlock) {
       name = name.toUpperCase();
       const isEndOfInlineContainer = /^DIV|^TD|^TH|^P|^LI|^H[1-7]/.test(name) &&
                                    !!endSlash;
-      const isBlockNode = /^BLOCKQUOTE|^TABLE|^TBODY|^TR|^HR|^UL|^OL/.test(name);
+      const isBlockNode = /^BR|^IMG|^BLOCKQUOTE|^TABLE|^TBODY|^TR|^HR|^UL|^OL/.test(name);
 
       return match + ((isEndOfInlineContainer || isBlockNode) ? '\n' : '');
     });
