@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import env from '../core/env';
 import key from '../core/key';
+import func from '../core/func';
 
 export default class LinkDialog {
   constructor(context) {
@@ -31,9 +32,9 @@ export default class LinkDialog {
         ? $('<div/>').append(this.ui.checkbox({
           className: 'sn-checkbox-open-in-new-window',
           text: this.lang.link.openInNewWindow,
-          checked: true
+          checked: true,
         }).render()).html()
-        : ''
+        : '',
     ].join('');
 
     const buttonClass = 'btn btn-primary note-btn note-btn-primary note-link-btn';
@@ -44,7 +45,7 @@ export default class LinkDialog {
       title: this.lang.link.insert,
       fade: this.options.dialogsFade,
       body: body,
-      footer: footer
+      footer: footer,
     }).render().appendTo($container);
   }
 
@@ -86,8 +87,8 @@ export default class LinkDialog {
       this.ui.onDialogShown(this.$dialog, () => {
         this.context.triggerEvent('dialog.shown');
 
-        // if no url was given, copy text to url
-        if (!linkInfo.url) {
+        // if no url was given and given text is valid URL then copy that into URL Field
+        if (!linkInfo.url && func.isValidUrl(linkInfo.text)) {
           linkInfo.url = linkInfo.text;
         }
 
@@ -137,7 +138,7 @@ export default class LinkDialog {
             range: linkInfo.range,
             url: $linkUrl.val(),
             text: $linkText.val(),
-            isNewWindow: $openInNewWindow.is(':checked')
+            isNewWindow: $openInNewWindow.is(':checked'),
           });
           this.ui.hideDialog(this.$dialog);
         });
