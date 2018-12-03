@@ -83,7 +83,7 @@ function rect2bnd(rect) {
     top: rect.top + $document.scrollTop(),
     left: rect.left + $document.scrollLeft(),
     width: rect.right - rect.left,
-    height: rect.bottom - rect.top,
+    height: rect.bottom - rect.top
   };
 }
 
@@ -144,16 +144,6 @@ function debounce(func, wait, immediate) {
   };
 }
 
-/**
- *
- * @param {String} url
- * @return {Boolean}
- */
-function isValidUrl(url) {
-  const expression = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi;
-  return expression.test(url);
-}
-
 export default {
   eq,
   eq2,
@@ -168,6 +158,5 @@ export default {
   rect2bnd,
   invertObject,
   namespaceToCamel,
-  debounce,
-  isValidUrl,
+  debounce
 };

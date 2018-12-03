@@ -7,7 +7,6 @@ import chai from 'chai';
 import $ from 'jquery';
 import Context from '../../../../src/js/base/Context';
 import VideoDialog from '../../../../src/js/base/module/VideoDialog';
-import '../../../../src/js/bs4/settings';
 
 describe('VideoDialog', () => {
   var expect = chai.expect;
@@ -23,8 +22,9 @@ describe('VideoDialog', () => {
   beforeEach(() => {
     var $note = $('<div></div>').appendTo('body');
     var options = $.extend({}, $.summernote.options);
+    options.langInfo = $.extend(true, {}, $.summernote.lang['en-US'], $.summernote.lang[options.lang]);
     options.toolbar = [
-      ['video', ['video']],
+      ['video', ['video']]
     ];
     context = new Context($note, options);
     context.initialize();

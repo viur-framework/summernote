@@ -12,7 +12,6 @@ import 'bootstrap';
 import chaidom from '../../chaidom';
 import env from '../../../src/js/base/core/env';
 import Context from '../../../src/js/base/Context';
-import '../../../src/js/bs4/settings';
 /* eslint-enable import/first */
 
 var expect = chai.expect;
@@ -21,11 +20,14 @@ chai.use(chaidom);
 
 describe('Context lifecycle', () => {
   it('should be initialized without calling callback', () => {
+    var options = $.extend({}, $.summernote.options);
+    options.langInfo = $.extend(true, {}, $.summernote.lang['en-US'], $.summernote.lang[options.lang]);
+
     var spy = chai.spy();
     var $note = $('<div><p>hello</p></div>');
     $note.on('summernote.change', spy);
 
-    var context = new Context($note, $.summernote.options);
+    var context = new Context($note, options);
     expect(spy).to.have.not.been.called();
 
     // [workaround]
@@ -37,11 +39,14 @@ describe('Context lifecycle', () => {
   });
 
   it('should preserve user events handler after destroy', () => {
+    var options = $.extend({}, $.summernote.options);
+    options.langInfo = $.extend(true, {}, $.summernote.lang['en-US'], $.summernote.lang[options.lang]);
+
     var spy = chai.spy();
     var $note = $('<div><p>hello</p></div>');
     $note.on('click', spy);
 
-    var context = new Context($note, $.summernote.options);
+    var context = new Context($note, options);
     context.destroy();
 
     $note.trigger('click');
@@ -52,7 +57,9 @@ describe('Context lifecycle', () => {
 describe('Context', () => {
   var context;
   beforeEach(() => {
-    context = new Context($('<div><p>hello</p></div>'), $.summernote.options);
+    var options = $.extend({}, $.summernote.options);
+    options.langInfo = $.extend(true, {}, $.summernote.lang['en-US'], $.summernote.lang[options.lang]);
+    context = new Context($('<div><p>hello</p></div>'), options);
   });
 
   it('should get or set contents with code', () => {

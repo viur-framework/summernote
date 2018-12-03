@@ -53,7 +53,7 @@ export default class Editor {
     const commands = [
       'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript',
       'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
-      'formatBlock', 'removeFormat', 'backColor',
+      'formatBlock', 'removeFormat', 'backColor'
     ];
 
     for (let idx = 0, len = commands.length; idx < len; idx++) {
@@ -113,10 +113,9 @@ export default class Editor {
       if (this.isLimited($(node).text().length)) {
         return;
       }
-      const rng = this.getLastRange();
+      const rng = this.createRange();
       rng.insertNode(node);
       range.createFromNodeAfter(node).select();
-      this.setLastRange();
     });
 
     /**
@@ -127,10 +126,9 @@ export default class Editor {
       if (this.isLimited(text.length)) {
         return;
       }
-      const rng = this.getLastRange();
+      const rng = this.createRange();
       const textNode = rng.insertNode(dom.createText(text));
       range.create(textNode, dom.nodeLength(textNode)).select();
-      this.setLastRange();
     });
     /**
      * paste HTML
@@ -140,9 +138,8 @@ export default class Editor {
       if (this.isLimited(markup.length)) {
         return;
       }
-      const contents = this.getLastRange().pasteHTML(markup);
+      const contents = this.createRange().pasteHTML(markup);
       range.createFromNodeAfter(lists.last(contents)).select();
-      this.setLastRange();
     });
 
     /**
@@ -163,10 +160,9 @@ export default class Editor {
      * insert horizontal rule
      */
     this.insertHorizontalRule = this.wrapCommand(() => {
-      const hrNode = this.getLastRange().insertNode(dom.create('HR'));
+      const hrNode = this.createRange().insertNode(dom.create('HR'));
       if (hrNode.nextSibling) {
         range.create(hrNode.nextSibling, 0).normalize().select();
-        this.setLastRange();
       }
     });
 
@@ -175,8 +171,8 @@ export default class Editor {
      * @param {String} value
      */
     this.lineHeight = this.wrapCommand((value) => {
-      this.style.stylePara(this.getLastRange(), {
-        lineHeight: value,
+      this.style.stylePara(this.createRange(), {
+        lineHeight: value
       });
     });
 
@@ -189,7 +185,7 @@ export default class Editor {
       let linkUrl = linkInfo.url;
       const linkText = linkInfo.text;
       const isNewWindow = linkInfo.isNewWindow;
-      let rng = linkInfo.range || this.getLastRange();
+      let rng = linkInfo.range || this.createRange();
       const additionalTextLength = linkText.length - rng.toString().length;
       if (additionalTextLength > 0 && this.isLimited(additionalTextLength)) {
         return;
@@ -204,9 +200,12 @@ export default class Editor {
       if (this.options.onCreateLink) {
         linkUrl = this.options.onCreateLink(linkUrl);
       } else {
-        // if url doesn't have any protocol and not even a relative or a label, use http:// as default
-        linkUrl = /^([A-Za-z][A-Za-z0-9+-.]*\:|#|\/)/.test(linkUrl)
-          ? linkUrl : 'http://' + linkUrl;
+        // if url is not relative,
+        if (!/^\.?\/(.*)/.test(linkUrl)) {
+          // if url doesn't match an URL schema, set http:// as default
+          linkUrl = /^[A-Za-z][A-Za-z0-9+-.]*\:[\/\/]?/.test(linkUrl)
+            ? linkUrl : 'http://' + linkUrl;
+        }
       }
 
       let anchors = [];
@@ -218,7 +217,7 @@ export default class Editor {
         anchors = this.style.styleNodes(rng, {
           nodeName: 'A',
           expandClosestSibling: true,
-          onlyPartialContains: true,
+          onlyPartialContains: true
         });
       }
 
@@ -242,7 +241,6 @@ export default class Editor {
         endPoint.node,
         endPoint.offset
       ).select();
-      this.setLastRange();
     });
 
     /**
@@ -278,7 +276,7 @@ export default class Editor {
     this.insertTable = this.wrapCommand((dim) => {
       const dimension = dim.split('x');
 
-      const rng = this.getLastRange().deleteContents();
+      const rng = this.createRange().deleteContents();
       rng.insertNode(this.table.createTable(dimension[0], dimension[1], this.options));
     });
 
@@ -315,7 +313,7 @@ export default class Editor {
       const $target = $(this.restoreTarget());
       $target.css({
         width: value * 100 + '%',
-        height: '',
+        height: ''
       });
     });
   }
@@ -339,22 +337,18 @@ export default class Editor {
         return false;
       }
     }).on('keyup', (event) => {
-      this.setLastRange();
       this.context.triggerEvent('keyup', event);
     }).on('focus', (event) => {
-      this.setLastRange();
       this.context.triggerEvent('focus', event);
     }).on('blur', (event) => {
       this.context.triggerEvent('blur', event);
     }).on('mousedown', (event) => {
       this.context.triggerEvent('mousedown', event);
     }).on('mouseup', (event) => {
-      this.setLastRange();
       this.context.triggerEvent('mouseup', event);
     }).on('scroll', (event) => {
       this.context.triggerEvent('scroll', event);
     }).on('paste', (event) => {
-      this.setLastRange();
       this.context.triggerEvent('paste', event);
     });
 
@@ -387,7 +381,6 @@ export default class Editor {
     }
 
     this.history.recordUndo();
-    this.setLastRange();
   }
 
   destroy() {
@@ -449,19 +442,7 @@ export default class Editor {
    */
   createRange() {
     this.focus();
-    this.setLastRange();
-    return this.getLastRange();
-  }
-
-  setLastRange() {
-    this.lastRange = range.create(this.editable);
-  }
-
-  getLastRange() {
-    if (!this.lastRange) {
-      this.setLastRange();
-    }
-    return this.lastRange;
+    return range.create(this.editable);
   }
 
   /**
@@ -472,8 +453,9 @@ export default class Editor {
    * @param {Boolean} [thenCollapse=false]
    */
   saveRange(thenCollapse) {
+    this.lastRange = this.createRange();
     if (thenCollapse) {
-      this.getLastRange().collapse().select();
+      this.lastRange.collapse().select();
     }
   }
 
@@ -577,7 +559,7 @@ export default class Editor {
    * handle tab key
    */
   tab() {
-    const rng = this.getLastRange();
+    const rng = this.createRange();
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.table.tab(rng);
     } else {
@@ -597,7 +579,7 @@ export default class Editor {
    * handle shift+tab key
    */
   untab() {
-    const rng = this.getLastRange();
+    const rng = this.createRange();
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.table.tab(rng, true);
     } else {
@@ -641,7 +623,6 @@ export default class Editor {
       $image.show();
       range.create(this.editable).insertNode($image[0]);
       range.createFromNodeAfter($image[0]).select();
-      this.setLastRange();
       this.afterCommand();
     }).fail((e) => {
       this.context.triggerEvent('image.upload.error', e);
@@ -672,7 +653,7 @@ export default class Editor {
    * @return {String} text
    */
   getSelectedText() {
-    let rng = this.getLastRange();
+    let rng = this.createRange();
 
     // if range on anchor, expand range with anchor
     if (rng.isOnAnchor()) {
@@ -704,7 +685,7 @@ export default class Editor {
   }
 
   fontStyling(target, value) {
-    const rng = this.getLastRange();
+    const rng = this.createRange();
 
     if (rng) {
       const spans = this.style.styleNodes(rng);
@@ -717,7 +698,6 @@ export default class Editor {
         if (firstSpan && !dom.nodeLength(firstSpan)) {
           firstSpan.innerHTML = dom.ZERO_WIDTH_NBSP_CHAR;
           range.createFromNodeAfter(firstSpan.firstChild).select();
-          this.setLastRange();
           this.$editable.data(KEY_BOGUS, firstSpan);
         }
       }
@@ -730,12 +710,11 @@ export default class Editor {
    * @type command
    */
   unlink() {
-    let rng = this.getLastRange();
+    let rng = this.createRange();
     if (rng.isOnAnchor()) {
       const anchor = dom.ancestor(rng.sc, dom.isAnchor);
       rng = range.createFromNode(anchor);
       rng.select();
-      this.setLastRange();
 
       this.beforeCommand();
       document.execCommand('unlink');
@@ -753,13 +732,14 @@ export default class Editor {
    * @return {String} [return.url=""]
    */
   getLinkInfo() {
-    const rng = this.getLastRange().expand(dom.isAnchor);
+    const rng = this.createRange().expand(dom.isAnchor);
+
     // Get the first anchor on range(for edit).
     const $anchor = $(lists.head(rng.nodes(dom.isAnchor)));
     const linkInfo = {
       range: rng,
       text: rng.toString(),
-      url: $anchor.length ? $anchor.attr('href') : '',
+      url: $anchor.length ? $anchor.attr('href') : ''
     };
 
     // When anchor exists,
@@ -772,7 +752,7 @@ export default class Editor {
   }
 
   addRow(position) {
-    const rng = this.getLastRange(this.$editable);
+    const rng = this.createRange(this.$editable);
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.beforeCommand();
       this.table.addRow(rng, position);
@@ -781,7 +761,7 @@ export default class Editor {
   }
 
   addCol(position) {
-    const rng = this.getLastRange(this.$editable);
+    const rng = this.createRange(this.$editable);
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.beforeCommand();
       this.table.addCol(rng, position);
@@ -790,7 +770,7 @@ export default class Editor {
   }
 
   deleteRow() {
-    const rng = this.getLastRange(this.$editable);
+    const rng = this.createRange(this.$editable);
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.beforeCommand();
       this.table.deleteRow(rng);
@@ -799,7 +779,7 @@ export default class Editor {
   }
 
   deleteCol() {
-    const rng = this.getLastRange(this.$editable);
+    const rng = this.createRange(this.$editable);
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.beforeCommand();
       this.table.deleteCol(rng);
@@ -808,7 +788,7 @@ export default class Editor {
   }
 
   deleteTable() {
-    const rng = this.getLastRange(this.$editable);
+    const rng = this.createRange(this.$editable);
     if (rng.isCollapsed() && rng.isOnCell()) {
       this.beforeCommand();
       this.table.deleteTable(rng);
@@ -828,12 +808,12 @@ export default class Editor {
       const ratio = $target.data('ratio');
       imageSize = {
         width: ratio > newRatio ? pos.x : pos.y / ratio,
-        height: ratio > newRatio ? pos.x * ratio : pos.y,
+        height: ratio > newRatio ? pos.x * ratio : pos.y
       };
     } else {
       imageSize = {
         width: pos.x,
-        height: pos.y,
+        height: pos.y
       };
     }
 
