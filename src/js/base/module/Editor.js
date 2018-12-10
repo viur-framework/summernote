@@ -309,10 +309,20 @@ export default class Editor {
      * resize overlay element
      * @param {String} value
      */
-    this.resize = this.wrapCommand((value) => {
+    this.resize = this.wrapCommand((className) => {
       const $target = $(this.restoreTarget());
+      let classNames = $target.attr('class');
+      if (classNames !== undefined) {
+        let classNames = $target.attr('class').split(' ');
+        classNames.forEach(function(val) {
+          if (val.startsWith('viur-img')) {
+            $target.removeClass(val);
+          }
+        });
+      }
+      $target.addClass(className);
       $target.css({
-        width: value * 100 + '%',
+        width: '',
         height: ''
       });
     });

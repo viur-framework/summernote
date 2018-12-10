@@ -626,21 +626,21 @@ export default class Buttons {
       return this.button({
         contents: '<span class="note-fontsize-10">100%</span>',
         tooltip: this.lang.image.resizeFull,
-        click: this.context.createInvokeHandler('editor.resize', '1')
+        click: this.context.createInvokeHandler('editor.resize', 'viur-img-full')
       }).render();
     });
     this.context.memo('button.imageSize50', () => {
       return this.button({
         contents: '<span class="note-fontsize-10">50%</span>',
         tooltip: this.lang.image.resizeHalf,
-        click: this.context.createInvokeHandler('editor.resize', '0.5')
+        click: this.context.createInvokeHandler('editor.resize', 'viur-img-half')
       }).render();
     });
     this.context.memo('button.imageSize25', () => {
       return this.button({
         contents: '<span class="note-fontsize-10">25%</span>',
         tooltip: this.lang.image.resizeQuarter,
-        click: this.context.createInvokeHandler('editor.resize', '0.25')
+        click: this.context.createInvokeHandler('editor.resize', 'viur-img-quarter')
       }).render();
     });
 
