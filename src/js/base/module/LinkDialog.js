@@ -28,7 +28,15 @@ export default class LinkDialog {
       '<input class="note-link-title form-control note-form-control note-input" type="text" />',
       '</div>',
       '<div class="form-group note-form-group">',
-      `<label class="note-form-label">${this.lang.link.url}</label>`,
+      `<label class="note-form-label">${this.lang.link.type}</label>`,
+      '<select class="note-link-type form-control note-form-control note-input">',
+      `<option value="url">${this.lang.link.inputurl}</option>`,
+      `<option value="mail">${this.lang.link.inputmail}</option>`,
+      `<option value="tel">${this.lang.link.inputtel}</option>`,
+      '</select>',
+      '</div>',
+      '<div class="form-group note-form-group">',
+      `<label class="note-form-label note-form-label-url">${this.lang.link.url}</label>`,
       '<input class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
       '</div>',
       !this.options.disableLinkTarget
@@ -74,18 +82,35 @@ export default class LinkDialog {
   }
 
   /**
+   * return the type of the given url
+   *
+   * @param {String} linkURL
+   * @return {String} type
+   */
+  getTypeByURL(linkURL) {
+    linkURL = linkURL.trim();
+    if (linkURL.startsWith('mailto:')) {
+      return 'mail';
+    } else if (linkURL.startsWith('tel:')) {
+      return 'tel';
+    } else {
+      return 'url';
+    }
+  }
+
+  /**
    * Show link dialog and set event handlers on dialog controls.
    *
    * @param {Object} linkInfo
    * @return {Promise}
    */
   showLinkDialog(linkInfo) {
-    console.log(1, linkInfo);
     return $.Deferred((deferred) => {
-      console.log(2, linkInfo, deferred);
       const $linkText = this.$dialog.find('.note-link-text');
       const $linkTitle = this.$dialog.find('.note-link-title');
+      const $linkType = this.$dialog.find('.note-link-type');
       const $linkUrl = this.$dialog.find('.note-link-url');
+      const $linkUrlLabel = this.$dialog.find('.note-form-label-url');
       const $linkBtn = this.$dialog.find('.note-link-btn');
       const $openInNewWindow = this.$dialog
         .find('.sn-checkbox-open-in-new-window input[type=checkbox]');
@@ -96,10 +121,25 @@ export default class LinkDialog {
         // if no url was given, copy text to url
         if (!linkInfo.url) {
           linkInfo.url = linkInfo.text;
+        } else {
+          // only when a specific url was given, we can have a specific type
+          linkInfo.type = this.getTypeByURL(linkInfo.url);
+          linkInfo.url = linkInfo.url.replace('mailto:', '').replace('tel:', '');
         }
 
         $linkText.val(linkInfo.text);
         $linkTitle.val(linkInfo.title);
+        $linkType.val(linkInfo.type);
+        $linkUrlLabel.text(this.lang.link['input' + linkInfo.type]);
+
+        const handleLinkTypeUpdate = () => {
+          linkInfo.type = $linkType.val();
+          $linkUrlLabel.text(this.lang.link['input' + linkInfo.type]);
+        };
+
+        $linkType.on('input', handleLinkTypeUpdate).on('paste', () => {
+          setTimeout(handleLinkTypeUpdate, 0);
+        });
 
         const handleLinkTextUpdate = () => {
           this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
@@ -142,9 +182,16 @@ export default class LinkDialog {
         $linkBtn.one('click', (event) => {
           event.preventDefault();
 
+          let url = $linkUrl.val();
+          if ($linkType.val() === 'mail') {
+            url = 'mailto:' + url;
+          } else if ($linkType.val() === 'tel') {
+            url = 'tel:' + url;
+          }
+
           deferred.resolve({
             range: linkInfo.range,
-            url: $linkUrl.val(),
+            url: url,
             text: $linkText.val(),
             title: $linkTitle.val(),
             isNewWindow: $openInNewWindow.is(':checked')

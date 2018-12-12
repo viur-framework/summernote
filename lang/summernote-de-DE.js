@@ -50,7 +50,11 @@
         textToDisplay: 'Anzeigetext',
         title: 'Titel (bei Mouseover)',
         url: 'Link URL',
-        openInNewWindow: 'In neuem Fenster öffnen'
+        openInNewWindow: 'In neuem Fenster öffnen',
+        type: 'Typ',
+        inputurl: 'Link',
+        inputmail: 'E-Mail Adresse',
+        inputtel: 'Telefonnummer'
       },
       table: {
         table: 'Tabelle',

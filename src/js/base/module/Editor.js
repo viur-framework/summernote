@@ -753,7 +753,6 @@ export default class Editor {
 
     // Get the first anchor on range(for edit).
     const $anchor = $(lists.head(rng.nodes(dom.isAnchor)));
-    console.log('anchro', $anchor);
     const linkInfo = {
       range: rng,
       text: rng.toString(),

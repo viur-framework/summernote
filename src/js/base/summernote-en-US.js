@@ -55,7 +55,11 @@ $.extend($.summernote.lang, {
       textToDisplay: 'Text to display',
       title: 'Title (on mouseover)',
       url: 'To what URL should this link go?',
-      openInNewWindow: 'Open in new window'
+      openInNewWindow: 'Open in new window',
+      type: 'Type',
+      inputurl: 'Link',
+      inputmail: 'mail',
+      inputtel: 'phone'
     },
     table: {
       table: 'Table',
