@@ -48,6 +48,7 @@
         unlink: 'Link entfernen',
         edit: 'Bearbeiten',
         textToDisplay: 'Anzeigetext',
+        title: 'Titel (bei Mouseover)',
         url: 'Link URL',
         openInNewWindow: 'In neuem Fenster öffnen'
       },

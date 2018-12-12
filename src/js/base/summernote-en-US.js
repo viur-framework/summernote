@@ -53,6 +53,7 @@ $.extend($.summernote.lang, {
       unlink: 'Unlink',
       edit: 'Edit',
       textToDisplay: 'Text to display',
+      title: 'Title (on mouseover)',
       url: 'To what URL should this link go?',
       openInNewWindow: 'Open in new window'
     },

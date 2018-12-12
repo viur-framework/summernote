@@ -50,7 +50,8 @@ export default class LinkPopover {
     if (rng.isCollapsed() && rng.isOnAnchor()) {
       const anchor = dom.ancestor(rng.sc, dom.isAnchor);
       const href = $(anchor).attr('href');
-      this.$popover.find('a').attr('href', href).html(href);
+      const title = $(anchor).attr('title');
+      this.$popover.find('a').attr('href', href).attr('title', title).html(href);
 
       const pos = dom.posFromPlaceholder(anchor);
       this.$popover.css({

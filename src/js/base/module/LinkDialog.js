@@ -24,6 +24,10 @@ export default class LinkDialog {
       '<input class="note-link-text form-control note-form-control note-input" type="text" />',
       '</div>',
       '<div class="form-group note-form-group">',
+      `<label class="note-form-label">${this.lang.link.title}</label>`,
+      '<input class="note-link-title form-control note-form-control note-input" type="text" />',
+      '</div>',
+      '<div class="form-group note-form-group">',
       `<label class="note-form-label">${this.lang.link.url}</label>`,
       '<input class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
       '</div>',
@@ -76,8 +80,11 @@ export default class LinkDialog {
    * @return {Promise}
    */
   showLinkDialog(linkInfo) {
+    console.log(1, linkInfo);
     return $.Deferred((deferred) => {
+      console.log(2, linkInfo, deferred);
       const $linkText = this.$dialog.find('.note-link-text');
+      const $linkTitle = this.$dialog.find('.note-link-title');
       const $linkUrl = this.$dialog.find('.note-link-url');
       const $linkBtn = this.$dialog.find('.note-link-btn');
       const $openInNewWindow = this.$dialog
@@ -92,6 +99,7 @@ export default class LinkDialog {
         }
 
         $linkText.val(linkInfo.text);
+        $linkTitle.val(linkInfo.title);
 
         const handleLinkTextUpdate = () => {
           this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
@@ -124,6 +132,7 @@ export default class LinkDialog {
         this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
         this.bindEnterKey($linkUrl, $linkBtn);
         this.bindEnterKey($linkText, $linkBtn);
+        this.bindEnterKey($linkTitle, $linkBtn);
 
         const isNewWindowChecked = linkInfo.isNewWindow !== undefined
           ? linkInfo.isNewWindow : this.context.options.linkTargetBlank;
@@ -137,6 +146,7 @@ export default class LinkDialog {
             range: linkInfo.range,
             url: $linkUrl.val(),
             text: $linkText.val(),
+            title: $linkTitle.val(),
             isNewWindow: $openInNewWindow.is(':checked')
           });
           this.ui.hideDialog(this.$dialog);
@@ -146,6 +156,7 @@ export default class LinkDialog {
       this.ui.onDialogHidden(this.$dialog, () => {
         // detach events
         $linkText.off('input paste keypress');
+        $linkTitle.off('input paste keypress');
         $linkUrl.off('input paste keypress');
         $linkBtn.off('click');
 

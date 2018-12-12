@@ -5,7 +5,7 @@
  * Copyright 2013- Alan Hong. and other contributors
  * summernote may be freely distributed under the MIT license.
  *
- * Date: 2018-12-12T13:44Z
+ * Date: 2018-12-12T14:51Z
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
@@ -2454,6 +2454,7 @@
               unlink: 'Unlink',
               edit: 'Edit',
               textToDisplay: 'Text to display',
+              title: 'Title (on mouseover)',
               url: 'To what URL should this link go?',
               openInNewWindow: 'Open in new window'
           },
@@ -4026,6 +4027,7 @@
            */
           this.createLink = this.wrapCommand(function (linkInfo) {
               var linkUrl = linkInfo.url;
+              var linkTitle = linkInfo.title;
               var linkText = linkInfo.text;
               var isNewWindow = linkInfo.isNewWindow;
               var rng = linkInfo.range || _this.createRange();
@@ -4064,6 +4066,7 @@
               }
               $$1.each(anchors, function (idx, anchor) {
                   $$1(anchor).attr('href', linkUrl);
+                  $$1(anchor).attr('title', linkTitle.trim());
                   if (isNewWindow) {
                       $$1(anchor).attr('target', '_blank');
                   }
@@ -4530,9 +4533,11 @@
           var rng = this.createRange().expand(dom.isAnchor);
           // Get the first anchor on range(for edit).
           var $anchor = $$1(lists.head(rng.nodes(dom.isAnchor)));
+          console.log('anchro', $anchor);
           var linkInfo = {
               range: rng,
               text: rng.toString(),
+              title: $anchor.length ? $anchor.attr('title') : '',
               url: $anchor.length ? $anchor.attr('href') : ''
           };
           // When anchor exists,
@@ -6165,6 +6170,10 @@
               '<input class="note-link-text form-control note-form-control note-input" type="text" />',
               '</div>',
               '<div class="form-group note-form-group">',
+              "<label class=\"note-form-label\">" + this.lang.link.title + "</label>",
+              '<input class="note-link-title form-control note-form-control note-input" type="text" />',
+              '</div>',
+              '<div class="form-group note-form-group">',
               "<label class=\"note-form-label\">" + this.lang.link.url + "</label>",
               '<input class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
               '</div>',
@@ -6212,8 +6221,11 @@
        */
       LinkDialog.prototype.showLinkDialog = function (linkInfo) {
           var _this = this;
+          console.log(1, linkInfo);
           return $$1.Deferred(function (deferred) {
+              console.log(2, linkInfo, deferred);
               var $linkText = _this.$dialog.find('.note-link-text');
+              var $linkTitle = _this.$dialog.find('.note-link-title');
               var $linkUrl = _this.$dialog.find('.note-link-url');
               var $linkBtn = _this.$dialog.find('.note-link-btn');
               var $openInNewWindow = _this.$dialog
@@ -6225,6 +6237,7 @@
                       linkInfo.url = linkInfo.text;
                   }
                   $linkText.val(linkInfo.text);
+                  $linkTitle.val(linkInfo.title);
                   var handleLinkTextUpdate = function () {
                       _this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
                       // if linktext was modified by keyup,
@@ -6251,6 +6264,7 @@
                   _this.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
                   _this.bindEnterKey($linkUrl, $linkBtn);
                   _this.bindEnterKey($linkText, $linkBtn);
+                  _this.bindEnterKey($linkTitle, $linkBtn);
                   var isNewWindowChecked = linkInfo.isNewWindow !== undefined
                       ? linkInfo.isNewWindow : _this.context.options.linkTargetBlank;
                   $openInNewWindow.prop('checked', isNewWindowChecked);
@@ -6260,6 +6274,7 @@
                           range: linkInfo.range,
                           url: $linkUrl.val(),
                           text: $linkText.val(),
+                          title: $linkTitle.val(),
                           isNewWindow: $openInNewWindow.is(':checked')
                       });
                       _this.ui.hideDialog(_this.$dialog);
@@ -6268,6 +6283,7 @@
               _this.ui.onDialogHidden(_this.$dialog, function () {
                   // detach events
                   $linkText.off('input paste keypress');
+                  $linkTitle.off('input paste keypress');
                   $linkUrl.off('input paste keypress');
                   $linkBtn.off('click');
                   if (deferred.state() === 'pending') {
@@ -6336,7 +6352,8 @@
           if (rng.isCollapsed() && rng.isOnAnchor()) {
               var anchor = dom.ancestor(rng.sc, dom.isAnchor);
               var href = $$1(anchor).attr('href');
-              this.$popover.find('a').attr('href', href).html(href);
+              var title = $$1(anchor).attr('title');
+              this.$popover.find('a').attr('href', href).attr('title', title).html(href);
               var pos = dom.posFromPlaceholder(anchor);
               this.$popover.css({
                   display: 'block',

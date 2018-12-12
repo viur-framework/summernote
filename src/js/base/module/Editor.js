@@ -201,6 +201,7 @@ export default class Editor {
      */
     this.createLink = this.wrapCommand((linkInfo) => {
       let linkUrl = linkInfo.url;
+      let linkTitle = linkInfo.title;
       const linkText = linkInfo.text;
       const isNewWindow = linkInfo.isNewWindow;
       let rng = linkInfo.range || this.createRange();
@@ -241,6 +242,7 @@ export default class Editor {
 
       $.each(anchors, (idx, anchor) => {
         $(anchor).attr('href', linkUrl);
+        $(anchor).attr('title', linkTitle.trim());
         if (isNewWindow) {
           $(anchor).attr('target', '_blank');
         } else {
@@ -751,9 +753,11 @@ export default class Editor {
 
     // Get the first anchor on range(for edit).
     const $anchor = $(lists.head(rng.nodes(dom.isAnchor)));
+    console.log('anchro', $anchor);
     const linkInfo = {
       range: rng,
       text: rng.toString(),
+      title: $anchor.length ? $anchor.attr('title') : '',
       url: $anchor.length ? $anchor.attr('href') : ''
     };
 
