@@ -52,7 +52,7 @@ export default class Editor {
     // native commands(with execCommand), generate function for execCommand
     const commands = [
       'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript',
-      'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
+      // 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
       'formatBlock', 'removeFormat', 'backColor'
     ];
 
@@ -70,6 +70,24 @@ export default class Editor {
     this.fontName = this.wrapCommand((value) => {
       return this.fontStyling('font-family', "\'" + value + "\'");
     });
+
+    this.justify = this.wrapCommand((value) => {
+      const currentRange = this.createRange();
+      const $parent = $([currentRange.sc, currentRange.ec]).parent();
+      $parent.toggleClass('viur-txt-align--left', value === 'left');
+      $parent.toggleClass('viur-txt-align--center', value === 'center');
+      $parent.toggleClass('viur-txt-align--right', value === 'right');
+      $parent.toggleClass('viur-txt-align--justify', value === 'full');
+    });
+    const justifyArr = ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'];
+    for (let idx = 0, len = justifyArr.length; idx < len; idx++) {
+      this[justifyArr[idx]] = ((sCmd) => {
+        return () => {
+          this.context.invoke('justify', sCmd.toLowerCase().replace('justify', ''));
+        };
+      })(justifyArr[idx]);
+      this.context.memo('help.' + justifyArr[idx], this.lang.help[justifyArr[idx]]);
+    }
 
     this.fontSize = this.wrapCommand((value) => {
       return this.fontStyling('font-size', value + 'px');
@@ -300,31 +318,18 @@ export default class Editor {
      */
     this.floatMe = this.wrapCommand((value) => {
       const $target = $(this.restoreTarget());
-      $target.toggleClass('note-float-left', value === 'left');
-      $target.toggleClass('note-float-right', value === 'right');
-      $target.css('float', value);
+      $target.toggleClass('viur-txt-float--left', value === 'left');
+      $target.toggleClass('viur-txt-float--right', value === 'right');
     });
 
     /**
      * resize overlay element
      * @param {String} value
      */
-    this.resize = this.wrapCommand((className) => {
+    this.resize = this.wrapCommand((size) => {
       const $target = $(this.restoreTarget());
-      let classNames = $target.attr('class');
-      if (classNames !== undefined) {
-        let classNames = $target.attr('class').split(' ');
-        classNames.forEach(function(val) {
-          if (val.startsWith('viur-img')) {
-            $target.removeClass(val);
-          }
-        });
-      }
-      $target.addClass(className);
-      $target.css({
-        width: '',
-        height: ''
-      });
+      $target.toggleClass('viur-txt-img--half', size === 'half');
+      $target.toggleClass('viur-txt-img--quarter', size === 'quarter');
     });
   }
 
@@ -627,7 +632,7 @@ export default class Editor {
         if (typeof param === 'string') {
           $image.attr('data-filename', param);
         }
-        $image.css('width', Math.min(this.$editable.width(), $image.width()));
+        $image.addClass('viur-txt-img');
       }
 
       $image.show();

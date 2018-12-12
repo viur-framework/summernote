@@ -43,9 +43,18 @@ export default class Bullet {
         }
       } else {
         $.each(paras, (idx, para) => {
-          $(para).css('marginLeft', (idx, val) => {
-            return (parseInt(val, 10) || 0) + 25;
-          });
+          const $para = $(para);
+          const classNames = $para.attr('class');
+          let newIndent = 1;
+          if (classNames !== undefined) {
+            const regex = /viur-txt-indent--([0-9]{1,2})\b/;
+            const match = classNames.match(regex);
+            if (match !== null && match !== undefined) {
+              newIndent = parseInt(match[1]) < 10 ? parseInt(match[1]) + 1 : parseInt(match[1]);
+              $(para).removeClass(match[0]);
+            }
+          }
+          $(para).addClass('viur-txt-indent--' + newIndent);
         });
       }
     });
@@ -68,10 +77,20 @@ export default class Bullet {
         this.releaseList([paras]);
       } else {
         $.each(paras, (idx, para) => {
-          $(para).css('marginLeft', (idx, val) => {
-            val = (parseInt(val, 10) || 0);
-            return val > 25 ? val - 25 : '';
-          });
+          const $para = $(para);
+          const classNames = $para.attr('class');
+          let newIndent = 0;
+          if (classNames !== undefined) {
+            const regex = /viur-txt-indent--([0-9]{1,2})\b/;
+            const match = classNames.match(regex);
+            if (match !== null && match !== undefined) {
+              newIndent = parseInt(match[1]) - 1;
+              $(para).removeClass(match[0]);
+            }
+          }
+          if (newIndent > 0) {
+            $(para).addClass('viur-txt-indent--' + newIndent);
+          }
         });
       }
     });

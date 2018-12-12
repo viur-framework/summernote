@@ -421,25 +421,25 @@ export default class Buttons {
     const justifyLeft = this.button({
       contents: this.ui.icon(this.options.icons.alignLeft),
       tooltip: this.lang.paragraph.left + this.representShortcut('justifyLeft'),
-      click: this.context.createInvokeHandler('editor.justifyLeft')
+      click: this.context.createInvokeHandler('editor.justify', 'left')
     });
 
     const justifyCenter = this.button({
       contents: this.ui.icon(this.options.icons.alignCenter),
       tooltip: this.lang.paragraph.center + this.representShortcut('justifyCenter'),
-      click: this.context.createInvokeHandler('editor.justifyCenter')
+      click: this.context.createInvokeHandler('editor.justify', 'center')
     });
 
     const justifyRight = this.button({
       contents: this.ui.icon(this.options.icons.alignRight),
       tooltip: this.lang.paragraph.right + this.representShortcut('justifyRight'),
-      click: this.context.createInvokeHandler('editor.justifyRight')
+      click: this.context.createInvokeHandler('editor.justify', 'rigtht')
     });
 
     const justifyFull = this.button({
       contents: this.ui.icon(this.options.icons.alignJustify),
       tooltip: this.lang.paragraph.justify + this.representShortcut('justifyFull'),
-      click: this.context.createInvokeHandler('editor.justifyFull')
+      click: this.context.createInvokeHandler('editor.justify', 'full')
     });
 
     const outdent = this.button({
@@ -626,21 +626,21 @@ export default class Buttons {
       return this.button({
         contents: '<span class="note-fontsize-10">100%</span>',
         tooltip: this.lang.image.resizeFull,
-        click: this.context.createInvokeHandler('editor.resize', 'viur-img-full')
+        click: this.context.createInvokeHandler('editor.resize', 'full')
       }).render();
     });
     this.context.memo('button.imageSize50', () => {
       return this.button({
         contents: '<span class="note-fontsize-10">50%</span>',
         tooltip: this.lang.image.resizeHalf,
-        click: this.context.createInvokeHandler('editor.resize', 'viur-img-half')
+        click: this.context.createInvokeHandler('editor.resize', 'half')
       }).render();
     });
     this.context.memo('button.imageSize25', () => {
       return this.button({
         contents: '<span class="note-fontsize-10">25%</span>',
         tooltip: this.lang.image.resizeQuarter,
-        click: this.context.createInvokeHandler('editor.resize', 'viur-img-quarter')
+        click: this.context.createInvokeHandler('editor.resize', 'quarter')
       }).render();
     });
 
