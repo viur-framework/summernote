@@ -14,7 +14,6 @@ export default class ImagePopover {
 
     this.editable = context.layoutInfo.editable[0];
     this.options = context.options;
-
     this.events = {
       'summernote.disable': () => {
         this.hide();
@@ -42,10 +41,11 @@ export default class ImagePopover {
     if (dom.isImg(target)) {
       const pos = dom.posFromPlaceholder(target);
       const posEditor = dom.posFromPlaceholder(this.editable);
+
       this.$popover.css({
         display: 'block',
-        left: this.options.popatmouse ? event.pageX - 20 : pos.left,
-        top: this.options.popatmouse ? event.pageY : Math.min(pos.top, posEditor.top)
+        left: this.options.popatmouse && typeof event !== 'undefined' ? event.pageX - 20 : pos.left,
+        top: this.options.popatmouse && typeof event !== 'undefined' ? event.pageY : Math.min(pos.top, posEditor.top)
       });
     } else {
       this.hide();
