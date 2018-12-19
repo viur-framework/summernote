@@ -10,6 +10,7 @@ export default class Statusbar {
   }
 
   initialize() {
+    this.$statusbar.removeClass('locked');
     if (this.options.airMode || this.options.disableResizeEditor) {
       this.destroy();
       return;
