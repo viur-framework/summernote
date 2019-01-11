@@ -73,7 +73,10 @@ export default class Editor {
 
     this.justify = this.wrapCommand((value) => {
       const currentRange = this.createRange();
-      const $parent = $([currentRange.sc, currentRange.ec]).parent();
+      let $parent = $([currentRange.sc, currentRange.ec]).parent().not('.note-editable');
+      while (!dom.isPurePara($parent.get(0))) {
+        $parent = $parent.parent();
+      }
       $parent.toggleClass('viur-txt-align--left', value === 'left');
       $parent.toggleClass('viur-txt-align--center', value === 'center');
       $parent.toggleClass('viur-txt-align--right', value === 'right');
