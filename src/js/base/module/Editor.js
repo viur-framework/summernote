@@ -73,14 +73,27 @@ export default class Editor {
 
     this.justify = this.wrapCommand((value) => {
       const currentRange = this.createRange();
-      let $parent = $([currentRange.sc, currentRange.ec]).parent().not('.note-editable');
-      while (!dom.isPurePara($parent.get(0))) {
-        $parent = $parent.parent();
+      let $parent = $([currentRange.sc, currentRange.ec]).parent();
+      if ($parent.hasClass('note-editable')) {
+        // selection parent is editor, this case appears if there is no content
+        // then wrap all content
+        $parent = $parent.contents().wrap('<p></p>').closest('.note-editable > p');
+      } else {
+        while (!dom.isPurePara($parent.get(0))) {
+          if ($parent.parent().hasClass('note-editable')) {
+            $parent = $(dom.wrap($parent.get(0), 'p'));
+            break;
+          }
+          $parent = $parent.parent(); // .not('.note-editable');
+        }
       }
-      $parent.toggleClass('viur-txt-align--left', value === 'left');
-      $parent.toggleClass('viur-txt-align--center', value === 'center');
-      $parent.toggleClass('viur-txt-align--right', value === 'right');
-      $parent.toggleClass('viur-txt-align--justify', value === 'full');
+      if ($parent.parents().hasClass('note-editable')) {
+        // make sure that we handle child of .note-editable
+        $parent.toggleClass('viur-txt-align--left', value === 'left');
+        $parent.toggleClass('viur-txt-align--center', value === 'center');
+        $parent.toggleClass('viur-txt-align--right', value === 'right');
+        $parent.toggleClass('viur-txt-align--justify', value === 'full');
+      }
     });
     const justifyArr = ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'];
     for (let idx = 0, len = justifyArr.length; idx < len; idx++) {
